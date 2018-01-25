@@ -12,6 +12,7 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.gui.AgentTree.AgentNode;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -84,6 +85,7 @@ public class ClientAgent extends Agent{
 				ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
 				cfp.addReceiver(superVisorAgent);
 				cfp.setContent(String.valueOf(cars));
+				cfp.setLanguage(String.valueOf(clientNumber));
 				cfp.setConversationId(StaticValues.SUPERVISOR_TYPE);
 				cfp.setReplyWith("cfp"+System.currentTimeMillis()); // unique value
 				myAgent.send(cfp);

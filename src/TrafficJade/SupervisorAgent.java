@@ -17,9 +17,7 @@ public class SupervisorAgent extends Agent{
 	int[] weight = new int[4];
 	int[] priority = new int[4];
 	int lightChoosen;
-	int time;
-	int messageRecieveCounter = 0;
-	List<ACLMessage> replyList = new ArrayList<>(4); 
+	int time; 
 	SupervisorAgent myAgent;
 	
 	protected void setup() {
@@ -73,23 +71,27 @@ public class SupervisorAgent extends Agent{
 	
 	
 	private class CalculateTimeRequest extends CyclicBehaviour {
+		int messageRecieveCounter = 0;
+		Object[] replyList = new Object[4];
+	
 		public void action() {
 			ACLMessage msg = myAgent.receive();
 			if (msg != null) {
 				
 				if (messageRecieveCounter==0)
-					replyList = new ArrayList<>();
+					replyList = new Object[4];
 				messageRecieveCounter++;
 				
-				cars[messageRecieveCounter-1] = Integer.valueOf(msg.getContent());
-				priority[messageRecieveCounter-1] = (int) (cars[messageRecieveCounter-1] * Math.pow(weight[messageRecieveCounter-1], 2));
-				replyList.add(msg.createReply()); ///==========assume message receive in correct sequence, maybe this assume is wrong 
+				int agentNumber = Integer.valueOf(msg.getLanguage());
+				cars[agentNumber-1] = Integer.valueOf(msg.getContent());
+				priority[agentNumber-1] = (int) (cars[agentNumber-1] * Math.pow(weight[agentNumber-1], 2));
+				replyList[agentNumber-1] = msg.createReply(); 
 					
 				if (messageRecieveCounter == 4) {
 					messageRecieveCounter = 0;
 					calculateTime();
-					for(int i=0; i<replyList.size(); i++) {
-						ACLMessage messageReply = replyList.get(i);
+					for(int i=0; i<4; i++) {
+						ACLMessage messageReply = (ACLMessage) replyList[i];
 						if (i==lightChoosen)
 							messageReply.setPerformative(ACLMessage.PROPOSE);
 						else
