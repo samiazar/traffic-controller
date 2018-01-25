@@ -27,6 +27,7 @@ public class IntersectionGui extends JFrame implements ActionListener{
 	private JLabel lAgentName;
 	private JLabel lCounter;
 	private JLabel lCarsCount;
+	private JLabel lWeight;
 	private int agentNumber;
 	private Timer timer;
 	private boolean isTimerRun;
@@ -36,7 +37,6 @@ public class IntersectionGui extends JFrame implements ActionListener{
 		super("Traffic lightening Controler");
 		this.agent = agent;
 		this.agentNumber = agentNumber;
-		timer = new Timer();
 		setSize(300, 250);
 		setResizable(false);
 		setFramePosition();
@@ -53,10 +53,18 @@ public class IntersectionGui extends JFrame implements ActionListener{
 		lCounter.setHorizontalAlignment(JLabel.CENTER); 
 		lCounter.setVerticalAlignment(JLabel.CENTER);
 		add(lCounter);
+		
+		Container infoContainer = new Container();
+		infoContainer.setLayout(new GridLayout(1,2));
 		lCarsCount = new JLabel("0 cars");
 		lCarsCount.setHorizontalAlignment(JLabel.CENTER); 
 		lCarsCount.setVerticalAlignment(JLabel.CENTER);
-		add(lCarsCount);
+		infoContainer.add(lCarsCount);
+		lWeight = new JLabel("weight: " + 1);
+		lWeight.setHorizontalAlignment(JLabel.CENTER); 
+		lWeight.setVerticalAlignment(JLabel.CENTER);
+		infoContainer.add(lWeight);
+		add(infoContainer);
 		changeLight(StaticValues.RED_LIGHT_MODE);
 		
 				
@@ -117,7 +125,7 @@ public class IntersectionGui extends JFrame implements ActionListener{
 			agent.incrementCar(5);
 			break;
 		case "7car":
-			agent.incrementCar(1);
+			agent.incrementCar(7);
 			break;
 		}
 	}
@@ -125,10 +133,16 @@ public class IntersectionGui extends JFrame implements ActionListener{
 	public void setCarCount(int carCount){
 		lCarsCount.setText(carCount + " cars");
 	}
+	
+	public void setWeight(int weight) {
+		lWeight.setText("weight: " + weight);
+	}
+
 
 	public void setCounter(int seconds) {
 		this.second = seconds;
-		if (!isTimerRun)
+		if (!isTimerRun) {
+			timer = new Timer();
 			timer.scheduleAtFixedRate(new TimerTask() {
 				@Override
 				public void run() {
@@ -142,15 +156,23 @@ public class IntersectionGui extends JFrame implements ActionListener{
 					}
 				}
 			}, 0, 1000);
-	
+		}
 	}
-		
+	
+	public void undefinedTime() {
+		second = -1;
+		counterSetText();
+	}
+			
 	
 	private void counterSetText(){
-		if (second < 10)
+		if (second > 10 )
+			lCounter.setText("00:"+second);
+		else if (second>=0)
 			lCounter.setText("00:0"+second);
 		else
-			lCounter.setText("00:"+second);}
+			lCounter.setText("--:--");
+		}
 
 	public void changeLight(int lightMode) {
 		ImageIcon trafficLight = new ImageIcon("res/red.png");;
